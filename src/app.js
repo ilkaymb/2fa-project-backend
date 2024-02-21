@@ -1,14 +1,18 @@
 const express = require("express");
-const jwt = require("jsonwebtoken");
-const speakeasy = require("speakeasy");
-const QRCode = require("qrcode");
+const swaggerUI = require("swagger-ui-express");
+const swaggerDocs = require("./swaggerOptions");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 app.use(express.json());
 
-const users = {}; // Basitlik adına kullanıcıları saklamak için bir obje
-const secretKey = "supersecretkey"; // JWT için gizli anahtar
+// Swagger UI'ı '/api-docs' path'inde kullanılabilir hale getirin
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
-app.listen(3000, () => {
-  console.log("Server is running on http://localhost:3000");
-});
+// Diğer route'larınız...
+app.use("/api/auth", authRoutes);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () =>
+  console.log(`Server running on port ${"http://localhost:" + PORT}`)
+);
