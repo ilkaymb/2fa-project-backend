@@ -1,5 +1,10 @@
 const express = require("express");
-const { register, login, listUsers } = require("../controllers/authController");
+const {
+  register,
+  login,
+  listUsers,
+  verifyOTP,
+} = require("../controllers/authController");
 
 const router = express.Router();
 
@@ -42,19 +47,48 @@ router.post("/register", register);
  *             required:
  *               - username
  *               - password
- *               - token
  *             properties:
  *               username:
  *                 type: string
  *               password:
- *                 type: string
- *               token:
  *                 type: string
  *     responses:
  *       200:
  *         description: Login successful
  */
 router.post("/login", login);
+
+/**
+ * @swagger
+ * /api/auth/verifyOTP:
+ *   post:
+ *     summary: Verify OTP for user login
+ *     description: Verifies the OTP sent to the user's email during the login process.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - token
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 description: The username of the user trying to log in.
+ *               token:
+ *                 type: string
+ *                 description: The OTP token sent to the user's email.
+ *     responses:
+ *       200:
+ *         description: OTP verified successfully.
+ *       400:
+ *         description: Invalid OTP.
+ *       404:
+ *         description: User not found.
+ */
+router.post("/verifyOTP", verifyOTP);
 
 /**
  * @swagger
