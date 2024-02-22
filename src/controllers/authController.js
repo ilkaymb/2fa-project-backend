@@ -118,9 +118,9 @@ exports.verifyOTP = async (req, res) => {
     function (err, decoded) {
       if (err) {
         if (err.name === "TokenExpiredError") {
-          console.log("Token süresi doldu.");
+          res.status(400).send("Token süresi doldu.");
         } else {
-          console.log("Token doğrulanamadı.");
+          res.status(400).send("Token doğrulanamadı.");
         }
       } else {
         console.log(decoded.username); // Kullanıcının username bilgisini göster
@@ -146,6 +146,7 @@ exports.verifyOTP = async (req, res) => {
   const verified = speakeasy.totp.verify({
     secret: user.secret, // Kullanıcının kaydı sırasında oluşturulan gizli anahtar
     encoding: "base32",
+    step: 600,
     token: otp, // Kullanıcı tarafından girilen OTP
     window: 1,
   });
