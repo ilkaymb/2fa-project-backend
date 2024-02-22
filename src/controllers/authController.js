@@ -5,11 +5,10 @@ const { secretKey } = require("../config");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 
-// Bu örnekte basit bir kullanıcı deposu olarak bir obje kullanılmaktadır.
-// Gerçek bir uygulamada, kullanıcı bilgileri bir veritabanında saklanmalıdır.
 const users = {};
 
 const saltRounds = 10;
+
 exports.register = async (req, res) => {
   const { username, email, password } = req.body;
   if (users[username]) {
@@ -65,6 +64,14 @@ exports.login = async (req, res) => {
       pass: "suyf givf hlxd idnv",
     },
   });
+
+  // JWT oluştur
+  const expiresIn = 10 * 60; // Token süresi 10 dakika
+
+  const jwtToken = await jwt.sign(
+    { username: user.username, exp: Math.floor(Date.now() / 1000) + expiresIn },
+    "MEUHW4LRJF4UG23XKRTFC4TUNYSUGPZG"
+  );
   // E-posta ile OTP gönder
   const mailOptions = {
     from: { name: "2FA Project", address: "imbroject@gmail.com" }, // sender address
@@ -88,11 +95,18 @@ exports.login = async (req, res) => {
     </html>`, // html body
   };
 
+  res.setHeader(
+    "Set-Cookie",
+    `token=${token}; HttpOnly; Path=/; Max-Age=600; SameSite=Lax`
+  );
+
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       return res.status(500).send({ message: "Failed to send email" });
     } else {
-      return res.status(200).send({ message: "OTP sent to your email" });
+      return res
+        .status(200)
+        .send({ message: "OTP sent to your email", token: jwtToken });
     }
   });
 };
