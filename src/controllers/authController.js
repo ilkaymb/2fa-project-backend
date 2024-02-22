@@ -56,6 +56,7 @@ exports.login = async (req, res) => {
   const token = speakeasy.totp({
     secret: user.secret,
     encoding: "base32",
+    step: 600,
   });
   let transporter = nodemailer.createTransport({
     service: "gmail",
@@ -68,10 +69,12 @@ exports.login = async (req, res) => {
   // JWT oluştur
   const expiresIn = 10 * 60; // Token süresi 10 dakika
 
-  const jwtToken = await jwt.sign(
-    { username: user.username, exp: Math.floor(Date.now() / 1000) + expiresIn },
-    "MEUHW4LRJF4UG23XKRTFC4TUNYSUGPZG"
+  var jwtToken = jwt.sign(
+    { user: username },
+    "MEUHW4LRJF4UG23XKRTFC4TUNYSUGPZG",
+    { expiresIn: "10m" }
   );
+
   // E-posta ile OTP gönder
   const mailOptions = {
     from: { name: "2FA Project", address: "imbroject@gmail.com" }, // sender address
@@ -105,24 +108,46 @@ exports.login = async (req, res) => {
     }
   });
 };
-
 exports.verifyOTP = async (req, res) => {
-  const { username, token } = req.body;
+  const { otp, jwtToken } = req.body;
+  var username,
+    exp = "";
+  jwt.verify(
+    jwtToken,
+    "MEUHW4LRJF4UG23XKRTFC4TUNYSUGPZG",
+    function (err, decoded) {
+      if (err) {
+        if (err.name === "TokenExpiredError") {
+          console.log("Token süresi doldu.");
+        } else {
+          console.log("Token doğrulanamadı.");
+        }
+      } else {
+        console.log(decoded.username); // Kullanıcının username bilgisini göster
+        username = decoded.user;
+        exp = decoded.exp;
+      }
+    }
+  );
+
   const user = users[username];
 
   if (!user) {
     return res.status(404).send("User not found");
   }
 
-  console.log(user.secret);
-  console.log(token);
+  // OTP geçerlilik süresini kontrol et
+  const currentTime = Math.floor(Date.now() / 1000);
+  if (currentTime > exp) {
+    return res.status(400).send("OTP expired");
+  }
 
   // Kullanıcının OTP'sini doğrula
   const verified = speakeasy.totp.verify({
     secret: user.secret, // Kullanıcının kaydı sırasında oluşturulan gizli anahtar
     encoding: "base32",
-    token: token, // Kullanıcı tarafından girilen OTP
-    window: 1, // OTP'nin geçerli olduğu pencere (bu değer OTP'nin geçerlilik süresine bağlı olarak ayarlanmalı)
+    token: otp, // Kullanıcı tarafından girilen OTP
+    window: 1,
   });
 
   if (verified) {
