@@ -95,11 +95,6 @@ exports.login = async (req, res) => {
     </html>`, // html body
   };
 
-  res.setHeader(
-    "Set-Cookie",
-    `token=${token}; HttpOnly; Path=/; Max-Age=600; SameSite=Lax`
-  );
-
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       return res.status(500).send({ message: "Failed to send email" });
