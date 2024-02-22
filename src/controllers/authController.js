@@ -68,7 +68,7 @@ exports.login = async (req, res) => {
   // E-posta ile OTP gönder
   const mailOptions = {
     from: { name: "2FA Project", address: "imbroject@gmail.com" }, // sender address
-    to: ["ilkaymb@hotmail.com"], // list of receivers
+    to: [user.email], // list of receivers
     subject: "Your Password", // Subject line
     html: `<!DOCTYPE html>
     <html lang="en">
