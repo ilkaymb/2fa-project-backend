@@ -74,15 +74,15 @@ router.post("/login", login);
  *           schema:
  *             type: object
  *             required:
- *               - username
- *               - token
+ *               - otp
+ *               - jwtToken
  *             properties:
- *               username:
+ *               otp:
  *                 type: string
- *                 description: The username of the user trying to log in.
- *               token:
+ *                 description: The otp sent to the user's email .
+ *               jwtToken:
  *                 type: string
- *                 description: The OTP token sent to the user's email.
+ *                 description: The jwtToken trying to log in.
  *     responses:
  *       200:
  *         description: OTP verified successfully.
