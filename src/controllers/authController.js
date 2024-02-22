@@ -90,10 +90,8 @@ exports.login = async (req, res) => {
 
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
-      console.log(error);
       return res.status(500).send({ message: "Failed to send email" });
     } else {
-      console.log("Email sent: " + info.response);
       return res.status(200).send({ message: "OTP sent to your email" });
     }
   });
