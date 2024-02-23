@@ -1,13 +1,14 @@
 require("dotenv").config();
-const nodemailer = require("nodemailer");
 
 module.exports = {
-  secretKey: process.env.SECRET_KEY,
-  transporter: nodemailer.createTransport({
+  keys: {
+    step1_key: process.env.STEP1_KEY,
+    step2_key: process.env.STEP2_KEY,
+  },
+  mail: {
     service: "gmail",
-    auth: {
-      user: process.env.USER,
-      pass: process.env.PASS,
-    },
-  }),
+    user: process.env.MAIL_USERNAME,
+    pass: process.env.MAIL_PASSWORD,
+  },
 };
+[process.env.NODE_ENV || "development"];
