@@ -108,56 +108,67 @@ exports.login = async (req, res) => {
     }
   });
 };
+
 exports.verifyOTP = async (req, res) => {
   const { otp, STEP1_TOKEN } = req.body;
-  var username,
+  let username,
     exp = "";
+  const SECRET_KEY_STEP2 = "MEUHW4LRJF4UG23XKRTFC4TUNYSUGPZA"; // STEP2 için yeni bir secret key veya aynı key kullanılabilir
+
   jwt.verify(
     STEP1_TOKEN,
     "MEUHW4LRJF4UG23XKRTFC4TUNYSUGPZG",
-    function (err, decoded) {
+    (err, decoded) => {
       if (err) {
-        if (err.name === "TokenExpiredError") {
-          res.status(400).send("Token süresi doldu.");
-        } else {
-          res.status(400).send("Token doğrulanamadı.");
-        }
+        return res
+          .status(400)
+          .send(
+            err.name === "TokenExpiredError"
+              ? "Token süresi doldu."
+              : "Token doğrulanamadı."
+          );
       } else {
-        console.log(decoded.username); // Kullanıcının username bilgisini göster
         username = decoded.user;
         exp = decoded.exp;
       }
+
+      const user = users[username];
+      if (!user) {
+        return res.status(404).send("User not found");
+      }
+
+      const currentTime = Math.floor(Date.now() / 1000);
+      if (currentTime > exp) {
+        return res.status(400).send("OTP expired");
+      }
+
+      const verified = speakeasy.totp.verify({
+        secret: user.secret,
+        encoding: "base32",
+        step: 600,
+        token: otp,
+        window: 1,
+      });
+
+      if (verified) {
+        // OTP doğrulama başarılı, STEP2_TOKEN oluştur
+        const STEP2_TOKEN = jwt.sign(
+          { username: user.username },
+          SECRET_KEY_STEP2,
+          { expiresIn: "1h" }
+        );
+
+        // Doğrulama başarılı ve STEP2_TOKEN ile yanıt gönder
+        res.status(200).json({
+          message: "OTP verified successfully",
+          token: STEP2_TOKEN,
+        });
+      } else {
+        // Doğrulama başarısız
+        res.status(400).send("Invalid OTP");
+      }
     }
   );
-
-  const user = users[username];
-
-  if (!user) {
-    return res.status(404).send("User not found");
-  }
-
-  // OTP geçerlilik süresini kontrol et
-  const currentTime = Math.floor(Date.now() / 1000);
-  if (currentTime > exp) {
-    return res.status(400).send("OTP expired");
-  }
-
-  // Kullanıcının OTP'sini doğrula
-  const verified = speakeasy.totp.verify({
-    secret: user.secret, // Kullanıcının kaydı sırasında oluşturulan gizli anahtar
-    encoding: "base32",
-    step: 600,
-    token: otp, // Kullanıcı tarafından girilen OTP
-    window: 1,
-  });
-
-  if (verified) {
-    // Doğrulama başarılı
-    res.status(200).send("OTP verified successfully");
-  } else {
-    // Doğrulama başarısız
-    res.status(400).send("Invalid OTP");
-  }
 };
 
 exports.listUsers = (req, res) => {
