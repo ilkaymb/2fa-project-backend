@@ -109,11 +109,11 @@ exports.login = async (req, res) => {
   });
 };
 exports.verifyOTP = async (req, res) => {
-  const { otp, jwtToken } = req.body;
+  const { otp, STEP1_TOKEN } = req.body;
   var username,
     exp = "";
   jwt.verify(
-    jwtToken,
+    STEP1_TOKEN,
     "MEUHW4LRJF4UG23XKRTFC4TUNYSUGPZG",
     function (err, decoded) {
       if (err) {
