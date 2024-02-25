@@ -15,7 +15,7 @@ const swaggerOptions = {
       },
     ],
   },
-  apis: ["./routes/*.js"], // Eğer routes klasörü kök dizindeyse
+  apis: ["./src/routes/*.js"], // Eğer routes klasörü kök dizindeyse
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
