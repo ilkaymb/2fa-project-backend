@@ -6,8 +6,6 @@ const router = express.Router();
 
 /**
  * @swagger
- /**
- * @swagger
  * /api/user/getAllUsers:
  *   get:
  *     summary: List all users
@@ -20,26 +18,35 @@ const router = express.Router();
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
+ *               type: object
+ *               additionalProperties:
  *                 type: object
  *                 properties:
- *                   username:
+ *                   email:
+ *                     type: string
+ *                   password:
+ *                     type: string
+ *                   secret:
  *                     type: string
  *                   id:
  *                     type: integer
  *                     description: The user's unique identifier.
- *         examples:
- *           application/json: [
- *             {
- *               "username": "john_doe",
- *               "id": 1
- *             },
- *             {
- *               "username": "jane_doe",
- *               "id": 2
- *             }
- *           ]
+ *             examples:
+ *               application/json:
+ *                 value: {
+ *                   "johnDoe": {
+ *                     "email": "johndoe@example.com",
+ *                     "password": "password123",
+ *                     "secret": "ABCDE12345FGHIJ",
+ *                     "id": 1
+ *                   },
+ *                   "janeDoe": {
+ *                     "email": "janedoe@example.com",
+ *                     "password": "password456",
+ *                     "secret": "KLMNO67890PQRST",
+ *                     "id": 2
+ *                   }
+ *                 }
  *       401:
  *         description: Unauthorized. Access token is missing or invalid.
  */
