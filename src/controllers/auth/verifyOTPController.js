@@ -9,8 +9,6 @@ exports.verifyOTP = async (req, res) => {
   const { otp } = req.body;
   const { user, exp } = req.user;
 
-  console.log("user", user);
-  console.log("exp", exp);
   const userProfile = Users.getUser(user);
   if (!userProfile) {
     return res.status(404).send("User not found");
