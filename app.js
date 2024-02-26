@@ -22,7 +22,6 @@ app.use(express.json());
 
 // Swagger UI'ı '/api-docs' path'inde kullanılabilir hale getirin
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
-
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 
