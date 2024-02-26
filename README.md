@@ -15,10 +15,14 @@ npm install
 **3. .env dosyasını oluşturun ve gerekli ortam değişkenlerini (environment variables) belirtin.**
 
 Örnek:
-STEP1_KEY=SECRET_KEY1
-STEP2_KEY=SECRET_KEY2
-MAIL_USERNAME=EXAMPLE_MAIL
-MAIL_PASSWORD=EXAMPLE_PASSWORD
+
+STEP1_KEY=SECRET_KEY1 
+
+STEP2_KEY=SECRET_KEY2 
+
+MAIL_USERNAME=EXAMPLE_MAIL 
+
+MAIL_PASSWORD=EXAMPLE_PASSWORD    
 
 Aşağıda belirttiğim çalışma kısmı notlarında uygulama için mail şifresi nasıl alınır detaylarıyla anlattım.
 
