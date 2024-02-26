@@ -23,6 +23,7 @@ exports.login = async (req, res) => {
     secret: user.secret,
     encoding: "base32",
     step: 600,
+    window: 1,
   });
   let transporter = nodemailer.createTransport({
     service: mail.service,
@@ -32,9 +33,13 @@ exports.login = async (req, res) => {
     },
   });
 
-  var jwtToken = jwt.sign({ user: username }, keys.step1_key, {
-    expiresIn: "10m",
-  });
+  var jwtToken = jwt.sign(
+    { user: username, type: "STEP1-TOKEN" },
+    keys.step1_key,
+    {
+      expiresIn: "10m",
+    }
+  );
 
   const mailOptions = {
     from: { name: "2FA Project", address: "imbroject@gmail.com" }, // sender address
